@@ -30,10 +30,10 @@ def _cut_lspc(row):
 if __name__ == '__main__':
     # preprocess training sets and gold standards
     print('BUILDING PREPROCESSED TRAINING SETS AND GOLD STANDARDS...')
-    os.makedirs(os.path.dirname('../../../data/interim/wdc-lspc/training-sets/'), exist_ok=True)
-    os.makedirs(os.path.dirname('../../../data/interim/wdc-lspc/gold-standards/'), exist_ok=True)
+    os.makedirs(os.path.dirname('data/interim/wdc-lspc/training-sets/'), exist_ok=True)
+    os.makedirs(os.path.dirname('data/interim/wdc-lspc/gold-standards/'), exist_ok=True)
 
-    for file in glob.glob('../../../data/raw/wdc-lspc/training-sets/*'):
+    for file in glob.glob('data/raw/wdc-lspc/training-sets/*'):
         df = pd.read_json(file, lines=True)
         df['title_left'] = df['title_left'].apply(utils.clean_string_wdcv2)
         df['description_left'] = df['description_left'].apply(utils.clean_string_wdcv2)
@@ -51,9 +51,9 @@ if __name__ == '__main__':
         file = os.path.basename(file)
         file = file.replace('.json.gz', '.pkl.gz')
         file = f'preprocessed_{file}'
-        df.to_pickle(f'../../../data/interim/wdc-lspc/training-sets/{file}')
+        df.to_pickle(f'data/interim/wdc-lspc/training-sets/{file}')
 
-    for file in glob.glob('../../../data/raw/wdc-lspc/gold-standards/*'):
+    for file in glob.glob('data/raw/wdc-lspc/gold-standards/*'):
         df = pd.read_json(file, lines=True)
         df['title_left'] = df['title_left'].apply(utils.clean_string_wdcv2)
         df['description_left'] = df['description_left'].apply(utils.clean_string_wdcv2)
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         file = os.path.basename(file)
         file = file.replace('.json.gz', '.pkl.gz')
         file = f'preprocessed_{file}'
-        df.to_pickle(f'../../../data/interim/wdc-lspc/gold-standards/{file}')
+        df.to_pickle(f'data/interim/wdc-lspc/gold-standards/{file}')
 
     print('FINISHED BUILDING PREPROCESSED TRAINING SETS AND GOLD STANDARDS...')
 

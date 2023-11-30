@@ -97,3 +97,7 @@ target/
 
 # Mypy cache
 .mypy_cache/
+src/contrastive/abtbuy/run_pretraining_clean_roberta.sh
+src/contrastive/abtbuy/run_pretraining_clean_roberta.sh
+src/contrastive/abtbuy/run_pretraining_clean_roberta.sh
+test.ipynb

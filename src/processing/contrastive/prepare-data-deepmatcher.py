@@ -21,8 +21,8 @@ def preprocess_dataset(arg_tuple):
     
     print(f'BUILDING {handle} TRAIN, VALID, GS...')
     
-    left_df = pd.read_csv(f'../../../data/raw/{handle}/tableA.csv', engine='python')
-    right_df = pd.read_csv(f'../../../data/raw/{handle}/tableB.csv', engine='python')
+    left_df = pd.read_csv(f'data/raw/{handle}/tableA.csv', engine='python')
+    right_df = pd.read_csv(f'data/raw/{handle}/tableB.csv', engine='python')
     
     left_df['id'] = f'{id_handle_left}_' +  left_df['id'].astype(str)
     right_df['id'] = f'{id_handle_right}_' +  right_df['id'].astype(str)
@@ -32,9 +32,9 @@ def preprocess_dataset(arg_tuple):
     left_df = left_df.fillna('')
     right_df = right_df.fillna('')
 
-    train = pd.read_csv(f'../../../data/raw/{handle}/train.csv')
-    test = pd.read_csv(f'../../../data/raw/{handle}/test.csv')
-    valid = pd.read_csv(f'../../../data/raw/{handle}/valid.csv')
+    train = pd.read_csv(f'data/raw/{handle}/train.csv')
+    test = pd.read_csv(f'data/raw/{handle}/test.csv')
+    valid = pd.read_csv(f'data/raw/{handle}/valid.csv')
     
     full = train.append(valid, ignore_index=True).append(test, ignore_index=True)
     full = full[full['label'] == 1]
@@ -144,9 +144,9 @@ def preprocess_dataset(arg_tuple):
     print(f'Amount of entity descriptions: {len(entity_set)}')
     print(f'Amount of clusters: {len(entity_set["cluster_id"].unique())}')
 
-    os.makedirs(os.path.dirname(f'../../../data/processed/{handle}/contrastive/'), exist_ok=True)
+    os.makedirs(os.path.dirname(f'data/processed/{handle}/contrastive/'), exist_ok=True)
 
-    entity_set.to_pickle(f'../../../data/processed/{handle}/contrastive/{handle}-train.pkl.gz', compression='gzip')
+    entity_set.to_pickle(f'data/processed/{handle}/contrastive/{handle}-train.pkl.gz', compression='gzip')
 
     print(f'FINISHED BULDING {handle} DATASETS\n')
 
