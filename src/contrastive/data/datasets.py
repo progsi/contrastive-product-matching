@@ -49,6 +49,14 @@ def serialize_sample_abtbuy(sample):
 
     return string
 
+def serialize_sample_shs100k2_yt(sample):
+    string = ''
+    string = f'{string}[COL] video title [VAL] {" ".join(sample[f"video_title"].split())}'.strip()
+    string = f'{string} [COL] description [VAL] {" ".join(sample[f"description"].split())}'.strip()
+    string = f'{string} [COL] channel [VAL] {" ".join(str(sample[f"channel_name"]).split())}'.strip()
+    
+    return string
+
 def serialize_sample_amazongoogle(sample):
     string = ''
     string = f'{string}[COL] brand [VAL] {" ".join(sample[f"manufacturer"].split())}'.strip()
@@ -165,6 +173,9 @@ class ContrastivePretrainDataset(torch.utils.data.Dataset):
         elif self.dataset == 'amazon-google':
             data['features'] = data.apply(serialize_sample_amazongoogle, axis=1)
 
+        elif self.dataset == 'shs100k2_yt':
+            data['features'] = data.apply(serialize_sample_shs100k2_yt, axis=1)
+        
         label_enc = LabelEncoder()
         data['labels'] = label_enc.fit_transform(data['cluster_id'])
 
@@ -203,9 +214,11 @@ class ContrastivePretrainDatasetDeepmatcher(torch.utils.data.Dataset):
                 val = pd.read_csv('../../data/interim/abt-buy/abt-buy-valid.csv')
             elif dataset == 'amazon-google':
                 val = pd.read_csv('../../data/interim/amazon-google/amazon-google-valid.csv')
-
+            else:
+                val = pd.read_csv(f'../../data/interim/{dataset}/{dataset}-valid.csv')
+            
             # use 80% of train and val set positives to build correspondence graph
-            val_set = train_data[train_data['pair_id'].isin(val['pair_id'])]
+            val_set = train_data[train_data['pair_id'].isin(val['pair_id'])]            
             val_set_pos = val_set[val_set['label'] == 1]
             val_set_pos = val_set_pos.sample(frac=0.80)
             val_ids = set()
@@ -256,6 +269,10 @@ class ContrastivePretrainDatasetDeepmatcher(torch.utils.data.Dataset):
             elif dataset == 'amazon-google':
                 left_index = [x for x in index if 'amazon' in x]
                 right_index = [x for x in index if 'google' in x]
+            else:
+                left_index = [x for x in index if 'left' in x]
+                right_index = [x for x in index if 'right' in x]
+            
             
             # assing increasing integer label to single nodes
             single_entities = single_entities.reset_index(drop=True)
@@ -375,6 +392,9 @@ class ContrastivePretrainDatasetDeepmatcher(torch.utils.data.Dataset):
         elif self.dataset == 'amazon-google':
             data['features'] = data.apply(serialize_sample_amazongoogle, axis=1)
 
+        elif self.dataset == 'shs100k2_yt':
+            data['features'] = data.apply(serialize_sample_shs100k2_yt, axis=1)
+
         data = data[['features', 'labels']]
 
         return data
@@ -449,7 +469,10 @@ class ContrastiveClassificationDataset(torch.utils.data.Dataset):
         elif self.dataset == 'amazon-google':
             data['features_left'] = data.apply(self.serialize_sample_amazongoogle, args=('left',), axis=1)
             data['features_right'] = data.apply(self.serialize_sample_amazongoogle, args=('right',), axis=1)
-
+        elif self.dataset == 'shs100k2_yt':
+            data['features_left'] = data.apply(self.shs100k2_yt, args=('left',), axis=1)
+            data['features_right'] = data.apply(self.shs100k2_yt, args=('right',), axis=1)
+        
         data = data[['features_left', 'features_right', 'label']]
         data = data.rename(columns={'label': 'labels'})
 
@@ -476,6 +499,14 @@ class ContrastiveClassificationDataset(torch.utils.data.Dataset):
 
         return string
 
+    def serialize_shs100k2_yt(self, sample, side):
+        string = ''
+        string = f'{string}[COL] video title [VAL] {" ".join(sample[f"video_title_{side}"].split())}'.strip()
+        string = f'{string} [COL] description [VAL] {" ".join(sample[f"description_{side}"].split())}'.strip()
+        string = f'{string} [COL] channel [VAL] {" ".join(str(sample[f"channel_name_{side}"]).split())}'.strip()
+        return string
+
+        
     def serialize_sample_amazongoogle(self, sample, side):
         
         string = ''
