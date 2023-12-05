@@ -434,6 +434,11 @@ class ContrastiveClassificationDataset(torch.utils.data.Dataset):
                 validation_ids = pd.read_csv(f'../../data/interim/abt-buy/abt-buy-valid.csv')
             elif dataset == 'amazon-google':
                 validation_ids = pd.read_csv(f'../../data/interim/amazon-google/amazon-google-valid.csv')
+            elif dataset == 'shs100k2_yt':
+                try:
+                    validation_ids = pd.read_csv(f'../../data/interim/shs100k2_yt/shs100k2_yt-valid.csv')
+                except FileNotFoundError:
+                    validation_ids = pd.read_csv(f'data/interim/shs100k2_yt/shs100k2_yt-valid.csv')
             if self.dataset_type == 'train':
                 data = data[~data['pair_id'].isin(validation_ids['pair_id'])]
             else:
@@ -470,8 +475,8 @@ class ContrastiveClassificationDataset(torch.utils.data.Dataset):
             data['features_left'] = data.apply(self.serialize_sample_amazongoogle, args=('left',), axis=1)
             data['features_right'] = data.apply(self.serialize_sample_amazongoogle, args=('right',), axis=1)
         elif self.dataset == 'shs100k2_yt':
-            data['features_left'] = data.apply(self.shs100k2_yt, args=('left',), axis=1)
-            data['features_right'] = data.apply(self.shs100k2_yt, args=('right',), axis=1)
+            data['features_left'] = data.apply(self.serialize_shs100k2_yt, args=('left',), axis=1)
+            data['features_right'] = data.apply(self.serialize_shs100k2_yt, args=('right',), axis=1)
         
         data = data[['features_left', 'features_right', 'label']]
         data = data.rename(columns={'label': 'labels'})
