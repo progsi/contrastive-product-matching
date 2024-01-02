@@ -57,6 +57,15 @@ def serialize_sample_shs100k2_yt(sample):
     
     return string
 
+def serialize_sample_shs100k(sample):
+    print(sample)
+    COL_TOKEN = "[COL]"
+    VAL_TOKEN = "[VAL]"
+    cols = sample.index
+    tuple_list = [(COL_TOKEN, col, VAL_TOKEN, col) for col in cols]
+    tokenized = ' '.join([' '.join(t) for t in tuple_list])
+    return tokenized
+
 def serialize_sample_amazongoogle(sample):
     string = ''
     string = f'{string}[COL] brand [VAL] {" ".join(sample[f"manufacturer"].split())}'.strip()
@@ -175,6 +184,8 @@ class ContrastivePretrainDataset(torch.utils.data.Dataset):
 
         elif self.dataset == 'shs100k2_yt':
             data['features'] = data.apply(serialize_sample_shs100k2_yt, axis=1)
+        elif "shs100k_" in self.dataset:
+            data['features'] = data.apply(serialize_sample_shs100k, axis=1)
         
         label_enc = LabelEncoder()
         data['labels'] = label_enc.fit_transform(data['cluster_id'])
@@ -395,6 +406,10 @@ class ContrastivePretrainDatasetDeepmatcher(torch.utils.data.Dataset):
         elif self.dataset == 'shs100k2_yt':
             data['features'] = data.apply(serialize_sample_shs100k2_yt, axis=1)
 
+        elif "shs100k_" in self.dataset:
+            data['features'] = data.apply(serialize_sample_shs100k, axis=1)
+
+        
         data = data[['features', 'labels']]
 
         return data
@@ -439,6 +454,9 @@ class ContrastiveClassificationDataset(torch.utils.data.Dataset):
                     validation_ids = pd.read_csv(f'../../data/interim/shs100k2_yt/shs100k2_yt-valid.csv')
                 except FileNotFoundError:
                     validation_ids = pd.read_csv(f'data/interim/shs100k2_yt/shs100k2_yt-valid.csv')
+            elif 'shs100k_' in dataset:
+                validation_ids = pd.read_csv(f'../../data/interim/{dataset}/{dataset}-valid.csv')
+
             if self.dataset_type == 'train':
                 data = data[~data['pair_id'].isin(validation_ids['pair_id'])]
             else:
@@ -477,7 +495,10 @@ class ContrastiveClassificationDataset(torch.utils.data.Dataset):
         elif self.dataset == 'shs100k2_yt':
             data['features_left'] = data.apply(self.serialize_shs100k2_yt, args=('left',), axis=1)
             data['features_right'] = data.apply(self.serialize_shs100k2_yt, args=('right',), axis=1)
-        
+        elif "shs100k_" in self.dataset:
+            data['features_left'] = data.apply(self.serialize_shs100k, args=('left',), axis=1)
+            data['features_right'] = data.apply(self.serialize_shs100k, args=('right',), axis=1)
+            
         data = data[['features_left', 'features_right', 'label']]
         data = data.rename(columns={'label': 'labels'})
 
@@ -511,7 +532,14 @@ class ContrastiveClassificationDataset(torch.utils.data.Dataset):
         string = f'{string} [COL] channel [VAL] {" ".join(str(sample[f"channel_name_{side}"]).split())}'.strip()
         return string
 
-        
+    def serialize_shs100k(self, sample, side):
+        COL_TOKEN = "[COL]"
+        VAL_TOKEN = "[VAL]"
+        cols = sample.index
+        tuple_list = [(COL_TOKEN, col, VAL_TOKEN, col) for col in cols if "_" + side in col]
+        tokenized = ' '.join([' '.join(t) for t in tuple_list])
+        return tokenized
+    
     def serialize_sample_amazongoogle(self, sample, side):
         
         string = ''

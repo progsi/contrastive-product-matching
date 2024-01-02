@@ -8,15 +8,15 @@ BATCH=$1
 LR=$2
 TEMP=$3
 AUG=$4
-TRAINFILE="shs100k_svL_1000-train"
+TRAINFILE="shs100k_svL-train"
 PROCESSED="shs100k_1000-train"
 
 python run_pretraining_deepmatcher.py \
     --do_train \
-	--dataset_name=shs100k \
+	--dataset_name=shs100k_1000 \
 	--clean=True \
-    --train_file /home/repos/contrastive-product-matching/data/processed/shs100k/contrastive/$PROCESSED.pkl.gz \
-	--id_deduction_set /home/repos/contrastive-product-matching/data/interim/shs100k/$TRAINFILE.json.gz \
+    --train_file /home/repos/contrastive-product-matching/data/processed/shs100k_1000/contrastive/$PROCESSED.pkl.gz \
+	--id_deduction_set /home/repos/contrastive-product-matching/data/interim/shs100k_1000/$TRAINFILE.json.gz \
 	--tokenizer="roberta-base" \
 	--grad_checkpoint=True \
     --output_dir /home/repos/contrastive-product-matching/reports/contrastive/shs100k-$TRAINFILE-clean-$AUG$BATCH-$LR-$TEMP-roberta-base/ \
