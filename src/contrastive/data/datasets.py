@@ -58,12 +58,15 @@ def serialize_sample_shs100k2_yt(sample):
     return string
 
 def serialize_sample_shs100k(sample):
-    print(sample)
     COL_TOKEN = "[COL]"
     VAL_TOKEN = "[VAL]"
-    cols = sample.index
-    tuple_list = [(COL_TOKEN, col, VAL_TOKEN, col) for col in cols]
+    cols = [col for col in sample.index if not "cluster_id" in col and not "id_" in col]    
+    tuple_list = [(COL_TOKEN, col, VAL_TOKEN, sample[col]) for col in cols]
+    print(tuple_list)
+    tuple_list = [(COL_TOKEN, col, VAL_TOKEN, str(sample[col]).replace('\n', ' ').replace('\r', '')) for col in cols]
     tokenized = ' '.join([' '.join(t) for t in tuple_list])
+    print(tokenized)
+
     return tokenized
 
 def serialize_sample_amazongoogle(sample):
@@ -116,7 +119,12 @@ class Augmenter():
         if aug is None:
             return string
         else:
-            return aug.augment(string)
+            # FIXME: added for robustness, but not pretty
+            try:
+                return aug.augment(string)
+            except:
+                print("Augmentation failed, returning unaugmented")
+                return string
 
 # Dataset class for general Contrastive Pre-training for WDC computers
 class ContrastivePretrainDataset(torch.utils.data.Dataset):
@@ -521,7 +529,6 @@ class ContrastiveClassificationDataset(torch.utils.data.Dataset):
         string = f'{string} [COL] title [VAL] {" ".join(sample[f"name_{side}"].split())}'.strip()
         string = f'{string} [COL] price [VAL] {" ".join(str(sample[f"price_{side}"]).split())}'.strip()
         string = f'{string} [COL] description [VAL] {" ".join(sample[f"description_{side}"].split()[:100])}'.strip()
-        
 
         return string
 
@@ -535,8 +542,8 @@ class ContrastiveClassificationDataset(torch.utils.data.Dataset):
     def serialize_shs100k(self, sample, side):
         COL_TOKEN = "[COL]"
         VAL_TOKEN = "[VAL]"
-        cols = sample.index
-        tuple_list = [(COL_TOKEN, col, VAL_TOKEN, col) for col in cols if "_" + side in col]
+        cols = [col for col in sample.index if not "cluster_id" in col and not "id_" in col]
+        tuple_list = [(COL_TOKEN, col, VAL_TOKEN, str(sample[col]).replace('\n', ' ').replace('\r', '')) for col in cols if "_" + side in col]
         tokenized = ' '.join([' '.join(t) for t in tuple_list])
         return tokenized
     

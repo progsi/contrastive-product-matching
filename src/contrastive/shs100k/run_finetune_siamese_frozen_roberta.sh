@@ -8,9 +8,9 @@ BATCH=$1
 LR=$2
 TEMP=$3
 AUG=$4
-TRAINFILE="shs100k_svL-train"
+PREAUG=$5
+TRAINFILE="shs100k_svS-train"
 TESTFILE="${TRAINFILE//train/gs}"
-PREAUG=$6
 PROCESSED="shs100k_1000-train"
 
 
