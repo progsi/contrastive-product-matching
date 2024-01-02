@@ -8,17 +8,19 @@ BATCH=$1
 LR=$2
 TEMP=$3
 AUG=$4
-TRAINFILE=$5
+TRAINFILE="shs100k_svL-train"
 TESTFILE="${TRAINFILE//train/gs}"
 PREAUG=$6
+PROCESSED="shs100k_1000-train"
+
 
 python run_finetune_siamese.py \
 	--model_pretrained_checkpoint /home/repos/contrastive-product-matching/reports/contrastive/shs100k-$TRAINFILE-clean-$PREAUG$BATCH-$LR-$TEMP-roberta-base/pytorch_model.bin \
     --do_train \
-	--dataset_name=abt-buy \
-    --train_file /home/repos/contrastive-product-matching/data/interim/shs100k/$TRAINFILE.json.gz \
-	--validation_file /home/repos/contrastive-product-matching/data/interim/shs100k/$TRAINFILE.json.gz \
-	--test_file /home/repos/contrastive-product-matching/data/interim/shs100k/$TESTFILE.json.gz \
+	--dataset_name=shs100k_1000 \
+    --train_file /home/repos/contrastive-product-matching/data/interim/shs100k_1000/$TRAINFILE.json.gz \
+	--validation_file /home/repos/contrastive-product-matching/data/interim/shs100k_1000/$TRAINFILE.json.gz \
+	--test_file /home/repos/contrastive-product-matching/data/interim/shs100k_1000/$TESTFILE.json.gz \
 	--evaluation_strategy=epoch \
 	--tokenizer="roberta-base" \
 	--grad_checkpoint=False \
