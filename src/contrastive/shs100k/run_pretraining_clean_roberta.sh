@@ -8,7 +8,7 @@ BATCH=$1
 LR=$2
 TEMP=$3
 AUG=$4
-TRAINFILE="shs100k_svS-train"
+TRAINFILE="shs100k_svShort-train"
 PROCESSED="shs100k_1000-train"
 
 python run_pretraining_deepmatcher.py \

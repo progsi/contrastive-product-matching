@@ -9,7 +9,7 @@ LR=$2
 TEMP=$3
 AUG=$4
 PREAUG=$5
-TRAINFILE="shs100k_svS-train"
+TRAINFILE="shs100k_svShort-train"
 TESTFILE="${TRAINFILE//train/gs}"
 PROCESSED="shs100k_1000-train"
 
