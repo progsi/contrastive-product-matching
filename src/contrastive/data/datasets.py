@@ -62,10 +62,8 @@ def serialize_sample_shs100k(sample):
     VAL_TOKEN = "[VAL]"
     cols = [col for col in sample.index if not "cluster_id" in col and not "id_" in col]    
     tuple_list = [(COL_TOKEN, col, VAL_TOKEN, sample[col]) for col in cols]
-    print(tuple_list)
     tuple_list = [(COL_TOKEN, col, VAL_TOKEN, str(sample[col]).replace('\n', ' ').replace('\r', '')) for col in cols]
     tokenized = ' '.join([' '.join(t) for t in tuple_list])
-    print(tokenized)
 
     return tokenized
 
@@ -511,16 +509,6 @@ class ContrastiveClassificationDataset(torch.utils.data.Dataset):
         data = data.rename(columns={'label': 'labels'})
 
         return data
-
-    def serialize_sample_lspc(self, sample, side):
-        
-        string = ''
-        string = f'{string}[COL] brand [VAL] {" ".join(sample[f"brand_{side}"].split(" ")[:5])}'.strip()
-        string = f'{string} [COL] title [VAL] {" ".join(sample[f"title_{side}"].split(" ")[:50])}'.strip()
-        string = f'{string} [COL] description [VAL] {" ".join(sample[f"description_{side}"].split(" ")[:100])}'.strip()
-        string = f'{string} [COL] specTableContent [VAL] {" ".join(sample[f"specTableContent_{side}"].split(" ")[:200])}'.strip()
-
-        return string
 
     def serialize_sample_abtbuy(self, sample, side):
         
